@@ -46,6 +46,7 @@ public:
     CanId Get_CanId();
     void Write_MaxPosVel(int num, int vel);
     int Get_MotorMaxPosVel();
+    __weak void PosArrive_Callback();// 位置环到达回调函数
 protected:
     MotorType_Def MotorType;
     MotorPID_Def MotorPID;
@@ -54,7 +55,9 @@ protected:
     CAN_Message Final_OutPut;
     uint8_t On;
     uint8_t PosUsed_Flag;
+    uint8_t PosArrive_Flag = 1; // 位置环到达标志位
     CanId can_ID;
+    uint8_t index;  // 电机在P_Motor中的索引号
     float PID_GetOutPut(PID_s *PID,float err);
     virtual void Vel_Ctrl();//基础为PID控制，可在继承中扩展
     virtual void Pos_Ctrl();

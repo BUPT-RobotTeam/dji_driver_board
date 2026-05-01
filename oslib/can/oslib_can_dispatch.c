@@ -43,7 +43,7 @@ static void CAN_Dispatch_Task(void *argument)
         if (NULL != record)
         {
             if (record->queue != NULL)
-                osMessageQueuePut(*(record->queue), &message, NULL, 0);
+                osMessageQueuePut(*(record->queue), &message, 0, 0);
             else if (record->callback != NULL)
                 record->callback(&message);
         }

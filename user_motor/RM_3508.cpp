@@ -8,6 +8,7 @@ const int RM_SEND_BASE = 0x200; //发报基准ID
 
 void Motor_RM_3508::Init(int num)
 {
+    index = num;
     MotorType = RM_3508;
     On = false;
     Ctrl_Reset();

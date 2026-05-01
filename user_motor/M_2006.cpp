@@ -9,6 +9,7 @@ const int RM_SEND_BASE = 0x200; //发报基准ID
 //M_2006的函数
 void Motor_M_2006::Init(int num)
 {
+    index = num;
     MotorType = M_2006;
     On = false;
     Ctrl_Reset();

@@ -2,6 +2,8 @@
 #include "message.h"
 #include "motor_math.h"
 
+# define POS_ARRIVE_THRESHOLD 0.2f// 位置环到达阈值
+
 extern osMutexId_t motorsMutexHandle;
 
 void MotorCtrl(){
@@ -67,6 +69,11 @@ void Motor::Multi_Pos_Ctrl() {
     float temp_err;
 
     temp_err = MotorPID.Pos_PID.target - Get_State();
+    if(fabs(temp_err) < POS_ARRIVE_THRESHOLD && !PosArrive_Flag) {
+        PosArrive_Flag = 1;
+        PosArrive_Callback();
+    }
+
     Temp_OutPut = PID_GetOutPut(&MotorPID.Pos_PID,temp_err);
 
     MotorPID.Vel_PID.target = Temp_OutPut;

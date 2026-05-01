@@ -43,6 +43,7 @@ void comm_can_set_rpm(float rpm, uint8_t* buffer, int32_t* send_index);
 //VESC的函数
 void Motor_VESC::Init(int num)
 {
+    index = num;
     MotorType = VESC;
     On = false;
     Ctrl_Reset();

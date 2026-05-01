@@ -2,6 +2,7 @@
 #include "message.h"
 #include "../user_motor/user_motor.h"
 #include "motor_math.h"
+# include "config.h"
 
 void* Motor::operator new(size_t)
 {
@@ -47,6 +48,7 @@ void Motor::Motor_SetTarget(float target) {
             MotorPID.Pos_PID.target = LimitPos_f(target,1);
         case Multi_POS_Mode:
             MotorPID.Pos_PID.target = target;
+            PosArrive_Flag = 0; // 设置了新目标，故清除位置环到达标志位
         case CUR_Mode:
             MotorPID.Cur_PID.target = target;
     }
@@ -131,4 +133,13 @@ void Motor::Write_MaxPosVel(int num, int vel) {
 
 int Motor::Get_MotorMaxPosVel(){
     return MotorPID.Pos_PID.ctrl_max;
+}
+
+__weak void Motor::PosArrive_Callback(){
+    uprintf("motorId is %d\r\n", index + 1);
+    can_msg msg;
+    msg.i16[0] = BOARDID;
+    msg.i16[1] = index + 1;
+
+    OSLIB_CAN_SendMessage(&hcan2, CAN_ID_STD, 0x286, &msg);
 }

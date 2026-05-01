@@ -8,6 +8,7 @@ const int RM_SEND_BASE = 0x1FF; //发报基准ID
 
 void Motor_GM_6020::Init(int num)
 {
+    index = num;
     MotorType = GM_6020;
     On = false;
     Ctrl_Reset();

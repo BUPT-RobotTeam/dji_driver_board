@@ -78,7 +78,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     Debug("%s: Rx IT", uart_handle->name);
     HAL_UART_Receive_IT(huart, (uint8_t *)&uart_handle->rx.it.rx_char, 1);
-    osMessageQueuePut(uart_handle->rx.it.rx_queue, &uart_handle->rx.it.rx_char, NULL, 0);
+    osMessageQueuePut(uart_handle->rx.it.rx_queue, &uart_handle->rx.it.rx_char, 0, 0);
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
