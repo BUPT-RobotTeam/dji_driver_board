@@ -22,10 +22,11 @@ typedef enum
 
 typedef enum
 {
-    VEL_Mode = 1,
-    POS_Mode,
-    Multi_POS_Mode,
-    CUR_Mode,
+    VEL_Mode = 1,   // 速度环
+    POS_Mode,       // 单圈位置环
+    Multi_POS_Mode, // 多圈位置环
+    CUR_Mode,       // 电流环
+    POS_CUR_Mode,   // 位置电流环
     BRAKE_Mode,
     N_Mode
 } MotorCtrlMode_Def;
@@ -66,7 +67,9 @@ typedef enum
     VELCTRL,
     POSCTRL,
     MULTIPOSCTRL,
-    CURCTRL
+    CURCTRL,
+    POSCURCFG,
+    POSCURCTRL,
 } CANOPTION;
 
 uint8_t If_used(int num);//判断是否使用
@@ -82,6 +85,7 @@ void write_MotorType(int num, MotorType_Def Type);//改写电机类型
 void write_MotorCtrlMode(int num, MotorCtrlMode_Def CtrlMode);//改写控制模式
 void write_MotorTarget(int num, float target);//改写目标值
 void write_MotorMaxPosVel(int num, int vel);
+void write_MotorMaxCur(int num, uint16_t cur);
 void motor_On(int num);
 void motor_Off(int num);
 float get_MotorState_Choose(int num, MotorCtrlMode_Def Mode);

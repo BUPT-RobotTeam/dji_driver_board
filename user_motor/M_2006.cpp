@@ -63,7 +63,7 @@ void Motor_M_2006::Data_Receive(CAN_ConnMessage msg) {
     MotorState.Vel_Now = (float)temp_content / re_ratio;
 
     temp_content = (int16_t)((msg.payload.ui8[4] << 8) + msg.payload.ui8[5]);
-    MotorState.Cur_Now = (float)temp_content * 10.0f / CURRENT_MAX_2006;
+    MotorState.Cur_Now = (float)temp_content;
 
 
     if(PosUsed_Flag)

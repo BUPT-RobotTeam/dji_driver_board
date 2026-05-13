@@ -265,6 +265,38 @@ static void Command_Motor_Curctrl(OSLIB_UART_Handle_t *uartHandle,int argc, char
         uprintf("motor_cxx%d has not been used \r\n",num);
 }
 
+static void Command_Motor_PosCurctrl(OSLIB_UART_Handle_t *uartHandle,int argc, char *argv[]){
+    if (argc != 4)
+    {
+        uprintf("Param num is error: poscurctrl <motorid> <pos> <cur>\r\n");
+        return;
+    }
+    int num = atoi(argv[1]);
+    int pos = atoi(argv[2]);
+    int cur = atoi(argv[3]);
+    if (num < 1 || num > 4)
+    {
+        uprintf("illegal motorId [%d]\r\n", num);
+        return;
+    }
+    if (cur < 0 || cur > 10000){
+        uprintf("illegal cur [%d]: must be in [0, 10000]\r\n", cur);
+        return;
+    }
+    if(If_used(num-1))
+    {
+        if(get_MotorCtrlMode(num-1) == POS_CUR_Mode){
+            write_MotorTarget(num - 1, pos);
+            write_MotorMaxCur(num - 1, cur);
+            uprintf("motor_cxx%d's pos is set to %d\r\n", num, pos);
+        }
+        else
+            uprintf("motor_cxx%d's ctrlmode isn't POS_CUR_Mode \r\n",num);
+    }
+    else
+        uprintf("motor_cxx%d has not been used \r\n",num);
+}
+
 static void Command_Motor_PrintInfo(OSLIB_UART_Handle_t *uartHandle,int argc, char *argv[])
 {
     if (argc != 2)
@@ -328,7 +360,7 @@ static void Command_SetMotor(OSLIB_UART_Handle_t *uartHandle,int argc, char *arg
         uprintf("illegal controlMode [%d]\r\n", mode);
         return;
     }
-    if(mode == POS_Mode || mode == Multi_POS_Mode)
+    if(mode == POS_Mode || mode == Multi_POS_Mode || mode == POS_CUR_Mode)
     {
         if(argc == 5)
         {
@@ -443,13 +475,14 @@ UART_CLI_Command_t UART_CommandList[] =
     {"velctrl", "velctrl <motorid> <vel>", Command_Motor_Velctrl},
     {"posctrl", "posctrl <motorid> <pos>", Command_Motor_Posctrl},
     {"multiposctrl", "multiposctrl <motorid> <pos>", Command_Motor_MultiPosctrl},
+    {"poscurctrl", "poscurctrl <motorid> <pos> <cur>", Command_Motor_PosCurctrl},
     {"curctrl", "curctrl <motorid> <cur>", Command_Motor_Curctrl},
     {"setid", "setid <boardid>",Command_Board_Setid},
     {"infos", "infos", Command_Motor_PrintInfoS},
     {"info", "info <motorid>", Command_Motor_PrintInfo},
     {"setmotor", "setmotor <motorid> <motorType> <controlMode> (<maxPosVel>) \r\n \
         motorType: 1 is 3508,2 is 2006,3 is 6020,4 is CyberGear,5 is VESC \r\n \
-        controlMode: 1 is SpeedLoop, 2 is PosLoop, 3 is MulitPosLoop, 4 is CurLoop\r\n \
+        controlMode: 1 is SpeedLoop, 2 is PosLoop, 3 is MulitPosLoop, 4 is CurLoop, 5 is PosCurMode\r\n \
         maxPosVel: Pos's maxvel",
      Command_SetMotor},
 #ifdef OSLIB_CAN_MODULE_ENABLED

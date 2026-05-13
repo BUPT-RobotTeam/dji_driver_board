@@ -46,8 +46,11 @@ public:
     CanId Get_CanId();
     void Write_MaxPosVel(int num, int vel);
     int Get_MotorMaxPosVel();
-    __weak void PosArrive_Callback();// 位置环到达回调函数
-protected:
+    void Write_MaxCur(uint16_t cur);
+    __weak void PosArrive_Callback(int index);   // 位置环到达回调函数
+    __weak void PosCurStuck_Callback(int index); // 位置电流环堵转回调函数
+    __weak void PosCurContinue_Callback(int index); // 位置电流环继续回调函数
+    protected:
     MotorType_Def MotorType;
     MotorPID_Def MotorPID;
     MotorState_Def MotorState;
@@ -55,7 +58,9 @@ protected:
     CAN_Message Final_OutPut;
     uint8_t On;
     uint8_t PosUsed_Flag;
-    uint8_t PosArrive_Flag = 1; // 位置环到达标志位
+    uint8_t PosArrive_Flag = 1;     // 位置环到达标志位
+    uint8_t PosCurStuck_Flag = 0;   // 位置电流环堵转标志位
+    uint32_t TaskStartTick = 0;     // 任务开始时间戳
     CanId can_ID;
     uint8_t index;  // 电机在P_Motor中的索引号
     float PID_GetOutPut(PID_s *PID,float err);
@@ -63,6 +68,7 @@ protected:
     virtual void Pos_Ctrl();
     virtual void Multi_Pos_Ctrl();
     virtual void Cur_Ctrl();
+    virtual void PosCur_Ctrl();
 };
 
 extern Motor* P_Motor[Motor::COUNT];

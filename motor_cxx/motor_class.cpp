@@ -3,6 +3,8 @@
 #include "../user_motor/user_motor.h"
 #include "motor_math.h"
 # include "config.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 void* Motor::operator new(size_t)
 {
@@ -41,6 +43,7 @@ Motor::Motor(){
 }
 
 void Motor::Motor_SetTarget(float target) {
+    TaskStartTick = xTaskGetTickCount();
     switch (MotorCtrlMode) {
         case VEL_Mode:
             MotorPID.Vel_PID.target = target;
@@ -51,6 +54,10 @@ void Motor::Motor_SetTarget(float target) {
             PosArrive_Flag = 0; // 设置了新目标，故清除位置环到达标志位
         case CUR_Mode:
             MotorPID.Cur_PID.target = target;
+        case POS_CUR_Mode:
+            MotorPID.Pos_PID.target = target;
+            PosArrive_Flag = 0;     // 设置了新目标，故清除位置环到达标志位
+            PosCurStuck_Flag = 0;   // 清除位置电流环堵转标志位
     }
 }
 
@@ -123,7 +130,7 @@ uint8_t Motor::If_On() {
 void Motor::Write_CtrlMode(MotorCtrlMode_Def CtrlMode){
     MotorCtrlMode = CtrlMode;
     Ctrl_Reset();
-    if(CtrlMode == Multi_POS_Mode ||CtrlMode == POS_Mode)
+    if(CtrlMode == Multi_POS_Mode || CtrlMode == POS_Mode || CtrlMode == POS_CUR_Mode)
         PosUsed_Flag = 1;
 }
 
@@ -135,11 +142,43 @@ int Motor::Get_MotorMaxPosVel(){
     return MotorPID.Pos_PID.ctrl_max;
 }
 
-__weak void Motor::PosArrive_Callback(){
-    uprintf("motorId is %d\r\n", index + 1);
+void Motor::Write_MaxCur(uint16_t cur){
+    MotorPID.Vel_PID.ctrl_max = cur;
+    MotorPID.Cur_PID.ctrl_max = cur;
+}
+
+/**
+ * @brief   多圈位置环到位回调函数
+ * @param   idx 电机索引(0~3)
+ */
+__weak void Motor::PosArrive_Callback(int idx){
+    uprintf("%d: arrive\r\n", idx + 1);
     can_msg msg;
     msg.i16[0] = BOARDID;
-    msg.i16[1] = index + 1;
-
+    msg.i16[1] = idx + 1;
     OSLIB_CAN_SendMessage(&hcan2, CAN_ID_STD, 0x286, &msg);
+}
+
+/**
+ * @brief   位置电流环堵转回调函数
+ * @param   idx 电机索引(0~3)
+ */
+__weak void Motor::PosCurStuck_Callback(int idx){
+    uprintf("%d: stuck\r\n", idx + 1);
+    can_msg msg;
+    msg.i16[0] = BOARDID;
+    msg.i16[1] = idx + 1;
+    OSLIB_CAN_SendMessage(&hcan2, CAN_ID_STD, 0x287, &msg);
+}
+
+/**
+ * @brief   位置电流环恢复转动回调函数
+ * @param   idx 电机索引(0~3)
+ */
+__weak void Motor::PosCurContinue_Callback(int idx){
+    uprintf("%d: continue\r\n", idx + 1);
+    can_msg msg;
+    msg.i16[0] = BOARDID;
+    msg.i16[1] = idx + 1;
+    OSLIB_CAN_SendMessage(&hcan2, CAN_ID_STD, 0x288, &msg);
 }
