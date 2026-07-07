@@ -27,7 +27,7 @@ const float POS_KD_3508 = 10.0f;
 const float CUR_KP_3508 = 1.0f;
 const float CUR_KI_3508 = 0.0f;
 const float CUR_KD_3508 = 0.0f;
-const float Reduction_Ratio_3508 = 3509.0f / 187.0f;
+const float Reduction_Ratio_3508 = 3591.0f / 187.0f;
 
 class Motor_RM_3508 : public Motor {
 public:

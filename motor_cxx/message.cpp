@@ -28,9 +28,9 @@ void  Receive_Choose(CAN_ConnMessage msg){
         CanId temp =  P_Motor[i]->Get_CanId();
         if(If_Right(msg.ide,msg.id,temp.get_ide,temp.get_Id,temp.get_mask) == 1)
         {
+            P_Motor[i]->Data_Receive(msg);
             if(!P_Motor[i]->If_On())
                 P_Motor[i]->Turn_On();
-            P_Motor[i]->Data_Receive(msg);
         }
     }
     return;
