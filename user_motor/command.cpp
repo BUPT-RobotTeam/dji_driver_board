@@ -126,6 +126,16 @@ void write_MotorMaxCur(int num, uint16_t cur){
     P_Motor[num]->Write_MaxCur(cur);
 }
 
+static void decode(uint32_t packed, int32_t *pos, uint16_t *cur) {
+    *cur = packed & 0xFFF;
+    uint32_t pos_bits = (packed >> 12) & 0xFFFFF;
+    if (pos_bits & 0x80000) {
+        *pos = (int32_t)(pos_bits | 0xFFF00000);
+    } else {
+        *pos = (int32_t)pos_bits;
+    }
+}
+
 void can2Handle(CAN_Message *msg){
     uint16_t motorId = msg->ui16[0];
     uint16_t option = msg->ui16[1];
@@ -170,14 +180,15 @@ void can2Handle(CAN_Message *msg){
                 write_MotorTarget(motorId, num);
             break;
         case POSCURCFG:
-            write_MotorCtrlMode(motorId,POS_CUR_Mode);
+            write_MotorCtrlMode(motorId, POS_CUR_Mode);
             break;
         case POSCURCTRL:
             if(If_used(motorId) && get_MotorCtrlMode(motorId) == POS_CUR_Mode){
-                uint16_t cur_11_0 = num & 0xFFF;
-                uint32_t pos_31_12 = num >> 12;
-                write_MotorTarget(motorId, pos_31_12);
-                write_MotorMaxCur(motorId, cur_11_0);
+                int32_t pos;
+                uint16_t cur;
+                decode(num, &pos, &cur);
+                write_MotorTarget(motorId, pos);
+                write_MotorMaxCur(motorId, cur);
             }
             break;
         default:

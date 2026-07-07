@@ -68,8 +68,8 @@ typedef enum
     POSCTRL,
     MULTIPOSCTRL,
     CURCTRL,
-    POSCURCFG,
-    POSCURCTRL,
+    POSCURCFG = 17,
+    POSCURCTRL = 18,
 } CANOPTION;
 
 uint8_t If_used(int num);//判断是否使用

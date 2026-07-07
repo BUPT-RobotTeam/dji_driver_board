@@ -2,6 +2,9 @@
 
 看飞书——电控——电机控制——新大疆驱动板使用指南
 
+## 开发指南
+CAN消息解析：见[message.cpp](motor_cxx\message.cpp)中的`can2ReceiveFunc`函数及[command.cpp](user_motor\command.cpp)中的`can2Handle`函数
+
 ## 2026年4月30日：新增多圈角度环下电机到位回调逻辑  
 电机到位后调用`PosArrive_Callback`函数，默认操作为通过串口与CAN告知电机ID：  
 ```cpp
@@ -46,7 +49,7 @@ __weak void Motor::PosCurContinue_Callback(int idx){
 
 这样的功能对于夹爪等机构来说十分适用。  
 位置电流环控制方法：
-- CAN消息`u16[0]`为电机ID(1~4)，`u16[1]`为11，`u32[1]`前20位为位置，后12位为最大电流(0~4095)
+- CAN消息`u16[0]`为电机ID(1~4)，`u16[1]`为12，`u32[1]`前20位为位置，后12位为最大电流(0~4095)
 - 串口：`poscurctrl <motorid> <pos> <cur>`
 
 ## TODO: 将原先的“电流环”改为“速度电流环”

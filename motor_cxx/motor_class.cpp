@@ -130,8 +130,10 @@ uint8_t Motor::If_On() {
 void Motor::Write_CtrlMode(MotorCtrlMode_Def CtrlMode){
     MotorCtrlMode = CtrlMode;
     Ctrl_Reset();
-    if(CtrlMode == Multi_POS_Mode || CtrlMode == POS_Mode || CtrlMode == POS_CUR_Mode)
+    if(CtrlMode == Multi_POS_Mode || CtrlMode == POS_Mode || CtrlMode == POS_CUR_Mode) {
         PosUsed_Flag = 1;
+        MotorPID.Pos_PID.target = MotorState.Pos_Now;  // 新增：将目标位置设为当前位置
+    }
 }
 
 void Motor::Write_MaxPosVel(int num, int vel) {

@@ -2,10 +2,24 @@
 #define DJI_DRIVER_BOARD_RM_3508_H
 #include "../motor_cxx/motor_cxx.h"
 
+// # define NORMAL
+# define RC2026_ARM
+// # define RC2026_LEG
+
 //RM_3608常量
 const float CURRENT_MAX_3508 = 16384.0f;
+# ifdef NORMAL
 const float VEL_KP_3508 = 250.0f;
 const float VEL_KI_3508 = 4.0f;
+# endif
+# ifdef RC2026_ARM
+const float VEL_KP_3508 = 350.0f;
+const float VEL_KI_3508 = 1.0f;
+# endif
+# ifdef RC2026_LEG
+const float VEL_KP_3508 = 350.0f;
+const float VEL_KI_3508 = 1.0f;
+# endif
 const float VEL_KD_3508 = 0.0f;
 const float POS_KP_3508 = 8.0f;
 const float POS_KI_3508 = 0.0f;

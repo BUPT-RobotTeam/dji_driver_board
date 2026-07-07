@@ -145,6 +145,7 @@ static void _Command_Help(const void *key, void **value, void *c1)
 
 static void Command_Help(OSLIB_UART_Handle_t *uart_handle, int argc, char *argv[])
 {
+    OSLIB_UART_Printf(uart_handle->huart, "DJI DRIVER BOARD VERSION 2026/7/7\r\n");
     HashTable_map(((OSLIB_UART_CLI_t *)(uart_handle->plugin))->table, _Command_Help, (void *)uart_handle);
 }
 
